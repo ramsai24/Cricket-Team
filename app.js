@@ -28,11 +28,15 @@ const intializeDBAndServer = async () => {
 
 intializeDBAndServer();
 
+//API 1
+
 app.get("/players/", async (request, response) => {
   const sqlQuery = `SELECT * FROM cricket_team;`;
   const playerList = await db.all(sqlQuery);
   response.send(playerList);
 });
+
+//API 2
 
 app.post("/players/", async (request, response) => {
   const { playerName, jerseyNumber, role } = request.body;
@@ -54,7 +58,8 @@ app.post("/players/", async (request, response) => {
     );`;
   const update = await db.run(sqlQuery);
   const playerIds = update.lastID;
-  response.send({ playerId: playerIds });
+  //response.send({ playerId: playerIds });
+  response.send("Player Added to Team");
   //console.log("success");
 });
 
