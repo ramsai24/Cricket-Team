@@ -28,12 +28,30 @@ const intializeDBAndServer = async () => {
 
 intializeDBAndServer();
 
+function convertSankeToCamel(dbObject) {
+  return {
+    playerId: dbObject.player_id,
+    playerName: dbObject.player_name,
+    jerseyNumber: dbObject.jersey_number,
+    role: dbObject.role,
+  };
+}
+
+function convertSankeToCamel1(dbObject) {
+  return {
+    playerId: dbObject.player_id,
+    playerName: dbObject.player_name,
+    jerseyNumber: dbObject.jersey_number,
+    role: dbObject.role,
+  };
+}
+
 //API 1
 
 app.get("/players/", async (request, response) => {
   const sqlQuery = `SELECT * FROM cricket_team;`;
   const playerList = await db.all(sqlQuery);
-  response.send(playerList);
+  response.send(playerList.map((dbObject) => convertSankeToCamel(dbObject)));
 });
 
 //API 2
@@ -64,15 +82,16 @@ app.post("/players/", async (request, response) => {
 });
 
 //API 3
-app.get("/players/:playerId", async (request, response) => {
+app.get("/players/:playerId/", async (request, response) => {
   const { playerId } = request.params;
 
   const sqlQuery = `
-    SELECT * FROM cricket_team WHERE player_id = ${playerId};
+    SELECT * FROM cricket_team WHERE player_id = "${playerId}";
   `;
   const list = await db.get(sqlQuery);
+  console.log(list);
 
-  response.send(list);
+  response.send(convertSankeToCamel(list));
 });
 
 //API 4
@@ -102,7 +121,9 @@ app.delete("/players/:playerId/", async (request, response) => {
   const sqlQuery = `
    DELETE FROM cricket_team  WHERE player_id = ${playerId};`;
 
-  await db.run(sqlQuery);
+  const player = await db.run(sqlQuery);
+  console.log(player);
+
   response.send("Player Removed");
 });
 
